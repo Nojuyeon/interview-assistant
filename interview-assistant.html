@@ -29,13 +29,13 @@
     let finalTranscript = '';
     let recognition;
 
-   function corsHeaders() {
-  return {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization"
-  };
-}
+    function startRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("이 브라우저는 음성 인식을 지원하지 않습니다.");
+        return;
+      }
+
       recognition = new SpeechRecognition();
       recognition.lang = 'ko-KR';
       recognition.interimResults = true;
@@ -48,7 +48,7 @@
           if (event.results[i].isFinal) {
             finalTranscript += transcript + '\n';
             document.getElementById('transcript').innerText = finalTranscript;
-            await sendToGPT(transcript); // 최신 문장만 보냄
+            await sendToGPT(transcript);
           } else {
             interim += transcript;
           }
@@ -104,5 +104,6 @@
   </script>
 </body>
 </html>
+
 
 
