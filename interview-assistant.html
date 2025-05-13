@@ -34,7 +34,7 @@
           if (event.results[i].isFinal) {
             finalTranscript += transcript + '\n';
             document.getElementById('transcript').innerText = finalTranscript;
-            await sendToGPT(transcript);  // 최신 문장만 보내기
+            await sendToGPT(transcript);
           } else {
             interim += transcript;
           }
@@ -60,16 +60,14 @@
         ]
       };
 
-     const res = await fetch("https://piramid2000.workers.dev", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(payload)
-});
-const data = await res.json();
-const result = data.choices?.[0]?.message?.content || 'GPT 응답 없음';
-responseBox.innerText = result;
+      const res = await fetch("https://piramid2000.workers.dev", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
       const data = await res.json();
       const result = data.choices?.[0]?.message?.content || 'GPT 응답 없음';
       responseBox.innerText = result;
@@ -77,3 +75,4 @@ responseBox.innerText = result;
   </script>
 </body>
 </html>
+
