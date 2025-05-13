@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,23 +19,13 @@
   <script>
     let finalTranscript = '';
     let recognition;
-    let isRecognizing = false;
 
     function startRecognition() {
-      if (isRecognizing) return;
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognition = new SpeechRecognition();
       recognition.lang = 'ko-KR';
       recognition.interimResults = true;
       recognition.continuous = true;
-
-      recognition.onstart = () => {
-        isRecognizing = true;
-      };
-
-      recognition.onend = () => {
-        isRecognizing = false;
-      };
 
       recognition.onresult = async (event) => {
         let interim = '';
@@ -53,8 +42,7 @@
       };
 
       recognition.onerror = (event) => {
-        alert('STT 오류 발생: ' + event.error);
-        recognition.stop();
+        alert('음성 인식 오류: ' + event.error);
       };
 
       recognition.start();
@@ -72,20 +60,17 @@
         ]
       };
 
-     // 이 부분만 교체해줘!
-const res = await fetch("https://piramid2000.workers.dev", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(payload)
-});
+      const res = await fetch("https://piramid2000.workers.dev", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
 
-const responseData = await res.json();
-const result = responseData.choices?.[0]?.message?.content || 'GPT 응답 없음';
-document.getElementById('response').innerText = result;
-
-
+      const data = await res.json();
+      const result = data.choices?.[0]?.message?.content || 'GPT 응답 없음';
+      responseBox.innerText = result;
     }
   </script>
 </body>
