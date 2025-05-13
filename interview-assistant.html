@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>실시간 인터뷰 비서</title>
+  <style>
+    body { font-family: sans-serif; padding: 1rem; background: #f9f9f9; }
+    h1 { color: #333; }
+    #transcript, #response { background: white; padding: 1rem; border: 1px solid #ccc; margin-top: 1rem; white-space: pre-wrap; }
+    button { padding: 0.5rem 1rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>🎤 실시간 인터뷰 비서 (STT + GPT 요약)</h1>
+  <button onclick="startRecognition()">음성 인식 시작</button>
+  <div id="transcript">[실시간 음성 텍스트]</div>
+  <div id="response">[GPT 요약/질문 결과]</div>
+
+  <script>
+    let finalTranscript = '';
+    let recognition;
+
+    function startRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'ko-KR';
+      recognition.interimResults = true;
+      recognition.continuous = true;
+
+      recognition.onresult = async (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + '\n';
+            document.getElementById('transcript').innerText = finalTranscript;
+            await sendToGPT(transcript);  // 최신 문장만 보내기
+          } else {
+            interim += transcript;
+          }
+        }
+      };
+
+      recognition.onerror = (event) => {
+        alert('음성 인식 오류: ' + event.error);
+      };
+
+      recognition.start();
+    }
+
+    async function sendToGPT(text) {
+      const responseBox = document.getElementById('response');
+      responseBox.innerText = '[GPT 처리 중...]';
+
+      const payload = {
+        model: "gpt-4",
+        messages: [
+          { role: "system", content: "너는 인터뷰 보조야. 아래 내용을 요약하고, 후속 질문을 2개 추천해줘. 중요한 용어는 한글로 병기해줘." },
+          { role: "user", content: text }
+        ]
+      };
+
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer YOUR_API_KEY_HERE",  // ← 여기 API 키 입력
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      const result = data.choices?.[0]?.message?.content || 'GPT 응답 없음';
+      responseBox.innerText = result;
+    }
+  </script>
+</body>
+</html>
