@@ -72,6 +72,25 @@
       const result = data.choices?.[0]?.message?.content || 'GPT 응답 없음';
       responseBox.innerText = result;
     }
+try {
+  const res = await fetch("https://piramid2000.workers.dev", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`서버 오류: ${res.status} ${errorText}`);
+  }
+
+  const data = await res.json();
+  const result = data.choices?.[0]?.message?.content || 'GPT 응답 없음';
+  responseBox.innerText = result;
+} catch (error) {
+  responseBox.innerText = `[GPT 오류] ${error.message}`;
+}
+
   </script>
 </body>
 </html>
