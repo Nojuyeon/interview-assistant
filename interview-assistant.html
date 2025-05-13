@@ -60,15 +60,16 @@
         ]
       };
 
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer YOUR_API_KEY_HERE",  // ← 여기 API 키 입력
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
+     const res = await fetch("https://piramid2000.workers.dev", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+});
+const data = await res.json();
+const result = data.choices?.[0]?.message?.content || 'GPT 응답 없음';
+responseBox.innerText = result;
       const data = await res.json();
       const result = data.choices?.[0]?.message?.content || 'GPT 응답 없음';
       responseBox.innerText = result;
