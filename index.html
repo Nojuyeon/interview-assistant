@@ -81,9 +81,9 @@
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
-      const result = data.choices?.[0]?.message?.content || 'GPT 응답 없음';
-      responseBox.innerText = result;
+     const responseData = await response.json();
+const result = responseData.choices?.[0]?.message?.content || 'GPT 응답 없음';
+document.getElementById('response').innerText = result;
     }
   </script>
 </body>
